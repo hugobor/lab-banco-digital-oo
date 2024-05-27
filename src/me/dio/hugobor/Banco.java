@@ -1,3 +1,4 @@
+package me.dio.hugobor;
 import java.util.List;
 
 public class Banco {

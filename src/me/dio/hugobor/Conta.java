@@ -1,3 +1,4 @@
+package me.dio.hugobor;
 
 public abstract class Conta implements IConta {
 	
@@ -6,27 +7,28 @@ public abstract class Conta implements IConta {
 
 	protected int agencia;
 	protected int numero;
-	protected double saldo;
+	protected Real saldo;
 	protected Cliente cliente;
 
 	public Conta(Cliente cliente) {
 		this.agencia = Conta.AGENCIA_PADRAO;
 		this.numero = SEQUENCIAL++;
 		this.cliente = cliente;
+		this.saldo = Real.of(0);
 	}
 
 	@Override
-	public void sacar(double valor) {
-		saldo -= valor;
+	public void sacar(Real valor) {
+		saldo = saldo.sub(valor);
 	}
 
 	@Override
-	public void depositar(double valor) {
-		saldo += valor;
+	public void depositar(Real valor) {
+		saldo = saldo.add(valor);
 	}
 
 	@Override
-	public void transferir(double valor, IConta contaDestino) {
+	public void transferir(Real valor, IConta contaDestino) {
 		this.sacar(valor);
 		contaDestino.depositar(valor);
 	}
@@ -39,7 +41,7 @@ public abstract class Conta implements IConta {
 		return numero;
 	}
 
-	public double getSaldo() {
+	public Real getSaldo() {
 		return saldo;
 	}
 
@@ -47,6 +49,6 @@ public abstract class Conta implements IConta {
 		System.out.println(String.format("Titular: %s", this.cliente.getNome()));
 		System.out.println(String.format("Agencia: %d", this.agencia));
 		System.out.println(String.format("Numero: %d", this.numero));
-		System.out.println(String.format("Saldo: %.2f", this.saldo));
+		System.out.println(String.format("Saldo: %s", this.saldo));
 	}
 }
