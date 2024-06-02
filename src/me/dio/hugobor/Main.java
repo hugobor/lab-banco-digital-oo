@@ -1,13 +1,15 @@
 package me.dio.hugobor;
 
+import java.math.BigDecimal;
+
 public class Main {
 
 	public static void main(String[] args) {
 		Cliente venilton = new Cliente();
 		venilton.setNome("Venilton");
 		
-		Conta cc = new ContaCorrente(venilton);
-		Conta poupanca = new ContaPoupanca(venilton);
+		IConta cc = ContaCorrente.forClient(venilton);
+		IConta poupanca = ContaPoupanca.forClient(venilton, new BigDecimal("0.5"));
 
 		cc.depositar(100);
 		cc.transferir(100, poupanca);

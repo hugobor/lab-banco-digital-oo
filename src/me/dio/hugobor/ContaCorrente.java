@@ -1,15 +1,26 @@
 package me.dio.hugobor;
 
+/**
+ * Conta básica.
+ */
 public class ContaCorrente extends Conta {
 
-	public ContaCorrente(Cliente cliente) {
+	//Construtores
+	private ContaCorrente(Cliente cliente) {
 		super(cliente);
 	}
 
-	@Override
-	public void imprimirExtrato() {
-		System.out.println("=== Extrato Conta Corrente ===");
-		super.imprimirInfosComuns();
+	public static IConta forClient(Cliente cliente) {
+		return new ContaCorrente(cliente);
 	}
 	
+	public static IConta forNewClient(String nomeCliente) {
+		return forClient(new Cliente(nomeCliente));
+	}
+	
+
+	@Override
+	public String extratoCabecalho() {
+		return "=== Extrato Conta Corrente ===";
+	}
 }

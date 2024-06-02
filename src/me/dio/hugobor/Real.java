@@ -1,13 +1,26 @@
 package me.dio.hugobor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Objects;
 
+
+/**
+ * Classe que representa números Reais em formato decimal.
+ * User <code>Real.of</code> para criar um Real.
+ * Reais negativos são possíveis. Eles representam dívidas.
+ */
 public class Real {
 	
 	private final BigDecimal value;
 	
+	/**
+	 * Objeto para arredondamento. Usar o ABNT 5891, arrendonda para o número par mais próximo quando
+	 * precisa arrendodar o 5. Não sei se esse é o correto para arredondar reais.
+	 */
+	public static final RoundingMode rounding = RoundingMode.HALF_EVEN;
+
 	
 	// Propriedades
 	public BigDecimal getValue() { return value; };
@@ -50,14 +63,12 @@ public class Real {
 		var decimalValue = value;
 		
 		if (value.compareTo(BigDecimal.ZERO) < 0) {
-			strBuilder.append("- R$ ");
+			strBuilder.append("- ");
 			decimalValue = value.abs();
-		} else {
-			strBuilder.append("R$ ");
 		}
 		
 		var formater = new DecimalFormat();
-		formater.applyLocalizedPattern("#.##0,00");
+		formater.applyLocalizedPattern("R$ #.##0,00");
 		strBuilder.append(formater.format(decimalValue));
 		
 		return strBuilder.toString();
@@ -82,10 +93,16 @@ public class Real {
 	
 	
 	// Métodos
+	/**
+	 * Soma reais.
+	 */
 	public Real add(Real other) {
 		return new Real(this.getValue().add(other.getValue()));
 	}
 	
+	/**
+	 * Subtrai reais.
+	 */
 	public Real sub(Real other) {
 		return new Real(this.getValue().subtract(other.getValue()));
 	}
