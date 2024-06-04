@@ -9,6 +9,9 @@ package me.dio.hugobor;
  */
 public interface IConta {
 	
+	/** Saldo disponível para saque na conta. */
+	Real saldo();
+	
 	/** Saca o valor da conta. */
 	void sacar(Real valor);
 	

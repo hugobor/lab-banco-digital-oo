@@ -11,8 +11,8 @@ public class Main {
 		IConta cc = ContaCorrente.forClient(venilton);
 		IConta poupanca = ContaPoupanca.forClient(venilton, new BigDecimal("0.5"));
 
-		cc.depositar(100);
-		cc.transferir(100, poupanca);
+		cc.depositar(100.0);
+		cc.transferir(100.0, poupanca);
 		
 		cc.imprimirExtrato();
 		poupanca.imprimirExtrato();

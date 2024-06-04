@@ -2,13 +2,92 @@ package me.dio.hugobor.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.Test;
 
-class ContasTest {
+import me.dio.hugobor.Cliente;
+import me.dio.hugobor.ContaCorrente;
+import me.dio.hugobor.ContaPoupanca;
+import me.dio.hugobor.IConta;
+import me.dio.hugobor.Real;
 
+class ContasTest {
+	
 	@Test
-	void testImprimirExtrato() {
-		fail("Not yet implemented");
+	void testContasExtratos() {
+		// Feito a partir da função main original
+		
+		Cliente venilton = new Cliente();
+		venilton.setNome("Venilton");
+		
+		IConta cc = ContaCorrente.forClient(venilton);
+		IConta poupanca = ContaPoupanca.forClient(venilton, new BigDecimal("0.5"));
+		
+		assertEquals("Venilton", venilton.getNome());
+		assertEquals(Real.of("0.00"), cc.saldo());
+		assertEquals(Real.of("0.00"), poupanca.saldo());
+		
+		cc.depositar(Real.of("100.00"));
+		assertEquals(Real.of("100.00"), cc.saldo());
+		cc.depositar(Real.of("5.25"));
+		assertEquals(Real.of("105.25"), cc.saldo());
+		
+		cc.transferir(Real.of("50.00"), poupanca);
+		assertEquals(Real.of("55.25"), cc.saldo());
+		assertEquals(Real.of("50.00"), poupanca.saldo());
+		
+		String extratoCC = cc.extrato();
+		String extratoPoupanca = poupanca.extrato();
+		
+		assertTrue(extratoCC.contains("Conta Corrente"));
+		assertTrue(extratoPoupanca.contains("Conta Poupança"));
+		assertTrue(extratoCC.contains("Venilton"));
+		assertTrue(extratoPoupanca.contains("Venilton"));
+		assertTrue(extratoCC.contains("Saldo: R$ 55,25"));
+		assertTrue(extratoPoupanca.contains("Saldo: R$ 50,00"));
+		assertTrue(extratoPoupanca.contains("Rendimento Mensal: 0,5 %"));
+		
+		// TODO Depósito passar do limite		
+	}
+	
+	
+	@Test
+	void testPoupanca() {
+		IConta blabu = (ContaPoupanca.forNewClient("Blabu", new BigDecimal("0.5")));
+		ContaPoupanca blabuPoupanca = (ContaPoupanca)blabu;
+		
+		assertEquals(new BigDecimal("0.5"), blabuPoupanca.getRendimentoMes());
+		assertEquals("0,5 %", blabuPoupanca.rendimentoMesToString());
+		
+		blabu.depositar(Real.of("500.00"));
+		assertEquals(Real.of("2.50"), blabuPoupanca.calculaRendimentoMes());
+
+		// M = C·(1 + i)^t 
+		assertEquals(Real.of("502.50"), blabuPoupanca.montanteRendimentoMeses(1));
+		assertEquals(Real.of("505.01"), blabuPoupanca.montanteRendimentoMeses(2));
+		assertEquals(Real.of("507.54"), blabuPoupanca.montanteRendimentoMeses(3));
+		assertEquals(Real.of("510.08"), blabuPoupanca.montanteRendimentoMeses(4));
+		assertEquals(Real.of("512.63"), blabuPoupanca.montanteRendimentoMeses(5));
+		assertEquals(Real.of("530.84"), blabuPoupanca.montanteRendimentoMeses(12));
+		assertEquals(Real.of("563.58"), blabuPoupanca.montanteRendimentoMeses(24));
+
+		blabu.sacar(Real.of("500.00"));
+		blabu.depositar(Real.of("1200.69"));
+		blabuPoupanca.setRendimentoMes(new BigDecimal("0.59"));
+		assertEquals("0,59 %", blabuPoupanca.rendimentoMesToString());
+		
+		assertEquals(Real.of("7.08"), blabuPoupanca.calculaRendimentoMes());
+		assertEquals(Real.of("1207.77"), blabuPoupanca.montanteRendimentoMeses(1));
+		assertEquals(Real.of("1214.90"), blabuPoupanca.montanteRendimentoMeses(2));
+		assertEquals(Real.of("1222.07"), blabuPoupanca.montanteRendimentoMeses(3));
+		assertEquals(Real.of("1229.28"), blabuPoupanca.montanteRendimentoMeses(4));
+		assertEquals(Real.of("1236.53"), blabuPoupanca.montanteRendimentoMeses(5));
+		assertEquals(Real.of("1288.51"), blabuPoupanca.montanteRendimentoMeses(12));
+		assertEquals(Real.of("1382.76"), blabuPoupanca.montanteRendimentoMeses(24));
+		assertEquals(Real.of("1592.43"), blabuPoupanca.montanteRendimentoMeses(48));
+		assertEquals(Real.of("2432.25"), blabuPoupanca.montanteRendimentoMeses(12*10));
+		
 	}
 
 }

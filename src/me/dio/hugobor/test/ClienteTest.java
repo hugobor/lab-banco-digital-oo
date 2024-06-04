@@ -17,5 +17,4 @@ class ClienteTest {
 		var client2 = new Cliente("Bilobinho");
 		assertEquals("Bilobinho", client2.getNome());	
 	}
-
 }

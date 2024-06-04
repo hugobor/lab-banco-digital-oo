@@ -32,7 +32,7 @@ public class Real {
 	}
 	
 	private Real(BigDecimal value) {
-		this.value = value.setScale(2);
+		this.value = value.setScale(2, Real.rounding);
 	}
 	
 	public static Real of(long centavos) {
@@ -55,7 +55,12 @@ public class Real {
 		var decimal = new BigDecimal(reais);
 		return new Real(decimal.setScale(2));
 	}
+	
+	public static Real of(BigDecimal toBeRounded) {
+		return new Real(toBeRounded);
+	}
 
+	
 	// Overrides
 	@Override
 	public String toString() {

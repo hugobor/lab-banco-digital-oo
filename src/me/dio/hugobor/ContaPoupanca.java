@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 
 public class ContaPoupanca extends Conta {
 	
-	// TODO Adicionar a função de cálculo de rendimento da poupança, 1 mês e n mêses.
 	// TODO Adicional conta especial (limite)
 	// TODO Adicionar objeto Agência
 	// TODO Colocar mais coisa no cliente
@@ -55,9 +54,9 @@ public class ContaPoupanca extends Conta {
 	
 	public String rendimentoMesToString() {
 		var formater = new DecimalFormat();
-		formater.applyLocalizedPattern("0,00 %");
+		formater.applyLocalizedPattern("#0,0#");
 		
-		return formater.format(rendimentoMes);
+		return formater.format(rendimentoMes) + " %";
 	}
 	
 	
@@ -74,5 +73,29 @@ public class ContaPoupanca extends Conta {
 		formater.applyLocalizedPattern("0,00");
 		
 		return String.format("Rendimento Mensal: %s%n", rendimentoMesToString()); 
+	}
+
+	/**
+	 * Rendimento em um mês.
+	 */
+	public Real calculaRendimentoMes() {
+		var rendimento = saldo.getValue().multiply(getRendimentoMesPercento());
+		
+		return Real.of(rendimento);
+	}
+
+	
+	/**
+	 * Montante do rendimento acumulado em <code>m</code> mêses.
+	 * M = C·(1 + i)^t 
+	 */
+	public Real montanteRendimentoMeses(int m) {
+		BigDecimal C = saldo.getValue();
+		BigDecimal i = getRendimentoMesPercento();
+		int t = m;
+		
+		BigDecimal M = C.multiply( (BigDecimal.ONE.add(i)).pow(t) );
+		
+		return Real.of(M); //of faz arredondamento
 	}
 }

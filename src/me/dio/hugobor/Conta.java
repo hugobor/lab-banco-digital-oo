@@ -52,6 +52,11 @@ public abstract class Conta implements IConta {
 		this.sacar(valor);
 		contaDestino.depositar(valor);
 	}
+	
+	@Override
+	public Real saldo() {
+		return saldo;
+	}
 
 	/**
 	 * Exibe um cabeçalho para o extrato. Deve conter o nome do tipo de conta.
