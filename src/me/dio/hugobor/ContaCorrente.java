@@ -15,7 +15,7 @@ public class ContaCorrente extends Conta {
 	}
 	
 	public static IConta forNewClient(String nomeCliente) {
-		return forClient(new Cliente(nomeCliente));
+		return forClient(Cliente.of(nomeCliente));
 	}
 	
 

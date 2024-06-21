@@ -13,27 +13,30 @@ public interface IConta {
 	Real saldo();
 	
 	/** Saca o valor da conta. */
-	void sacar(Real valor);
+	void sacar(Real valor) throws LimiteException;
 	
 	/** Deposita o valor na conta. */
 	void depositar(Real valor);
 	
 	/** Transfere o valor para outra conta. */
-	void transferir(Real valor, IConta contaDestino);
+	void transferir(Real valor, IConta contaDestino) throws LimiteException;
+	
+	/** Limite máximo para saque. */
+	Real limite();
 	
 	
 	// Delegates
-	default void sacar(double valor) { sacar(Real.of(valor)); }
+	default void sacar(double valor) throws LimiteException { sacar(Real.of(valor)); }
 	default void depositar(double valor) { depositar(Real.of(valor)); }
-	default void transferir(double valor, IConta contaDestino) { transferir(Real.of(valor), contaDestino); }
+	default void transferir(double valor, IConta contaDestino) throws LimiteException { transferir(Real.of(valor), contaDestino); }
 	
-	default void sacar(long valor) { sacar(Real.of(valor)); }
+	default void sacar(long valor) throws LimiteException { sacar(Real.of(valor)); }
 	default void depositar(long valor) { depositar(Real.of(valor)); }
-	default void transferir(long valor, IConta contaDestino) { transferir(Real.of(valor), contaDestino); }
+	default void transferir(long valor, IConta contaDestino) throws LimiteException { transferir(Real.of(valor), contaDestino); }
 	
-	default void sacar(String valor) { sacar(Real.of(valor)); }
+	default void sacar(String valor) throws LimiteException { sacar(Real.of(valor)); }
 	default void depositar(String valor) { depositar(Real.of(valor)); }
-	default void transferir(String valor, IConta contaDestino) { transferir(Real.of(valor), contaDestino); }
+	default void transferir(String valor, IConta contaDestino) throws LimiteException { transferir(Real.of(valor), contaDestino); }
 
 	
 	/**

@@ -8,7 +8,7 @@ public class ContaPoupanca extends Conta {
 	// TODO Adicional conta especial (limite)
 	// TODO Adicionar objeto Agência
 	// TODO Colocar mais coisa no cliente
-	// TODO Adicionar extrato de lançamento
+	// TODO Adicionar extrato de lançamentos
 
 	/** Taxa de rendimento da poupança. % */
 	private BigDecimal rendimentoMes = new BigDecimal("0.5");
@@ -33,11 +33,11 @@ public class ContaPoupanca extends Conta {
 	}
 	
 	public static IConta forNewClient(String nomeCliente) {
-		return forClient(new Cliente(nomeCliente));
+		return forClient(Cliente.of(nomeCliente));
 	}
 	
 	public static IConta forNewClient(String nomeCliente, BigDecimal rendimentoMes) {
-		return forClient(new Cliente(nomeCliente), rendimentoMes);
+		return forClient(Cliente.of(nomeCliente), rendimentoMes);
 	}	
 	
 	

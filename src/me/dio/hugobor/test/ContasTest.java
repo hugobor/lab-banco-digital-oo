@@ -10,12 +10,14 @@ import me.dio.hugobor.Cliente;
 import me.dio.hugobor.ContaCorrente;
 import me.dio.hugobor.ContaPoupanca;
 import me.dio.hugobor.IConta;
+import me.dio.hugobor.LimiteException;
 import me.dio.hugobor.Real;
 
 class ContasTest {
 	
 	@Test
 	void testContasExtratos() {
+		
 		// Feito a partir da função main original
 		
 		Cliente venilton = new Cliente();
@@ -33,9 +35,14 @@ class ContasTest {
 		cc.depositar(Real.of("5.25"));
 		assertEquals(Real.of("105.25"), cc.saldo());
 		
-		cc.transferir(Real.of("50.00"), poupanca);
+		try {
+			cc.transferir(Real.of("50.00"), poupanca);
+		} catch (LimiteException ignore) {
+		}
+		
 		assertEquals(Real.of("55.25"), cc.saldo());
 		assertEquals(Real.of("50.00"), poupanca.saldo());
+
 		
 		String extratoCC = cc.extrato();
 		String extratoPoupanca = poupanca.extrato();
@@ -47,8 +54,46 @@ class ContasTest {
 		assertTrue(extratoCC.contains("Saldo: R$ 55,25"));
 		assertTrue(extratoPoupanca.contains("Saldo: R$ 50,00"));
 		assertTrue(extratoPoupanca.contains("Rendimento Mensal: 0,5 %"));
+	}
+	
+	@Test
+	void testLimiteException() {
+		Cliente hugo = Cliente.of("Hugo");
+		IConta cc = ContaCorrente.forClient(hugo);
+		IConta poup = ContaPoupanca.forClient(hugo);
 		
-		// TODO Depósito passar do limite		
+		cc.depositar("100.00");
+		assertDoesNotThrow(() -> cc.sacar("50.00"));
+		assertEquals(Real.of("50.00"), cc.saldo());
+		
+		assertThrows(LimiteException.class, () -> cc.sacar("50.01"));
+		assertEquals(Real.of("50.00"), cc.saldo());
+		
+		assertThrows(LimiteException.class, () -> cc.sacar("100.00"));
+		assertEquals(Real.of("50.00"), cc.saldo());
+		
+		assertThrows(LimiteException.class, () -> cc.sacar("1000000.00"));
+		assertEquals(Real.of("50.00"), cc.saldo());
+		
+		assertDoesNotThrow(() -> cc.sacar("50.00"));
+		assertEquals(Real.of("0.00"), cc.saldo());
+		
+		cc.depositar("1000.00");
+		assertDoesNotThrow(() -> cc.transferir("600.00", poup));
+		assertEquals(Real.of("400.00"), cc.saldo());
+		assertEquals(Real.of("600.00"), poup.saldo());
+		
+		assertThrows(LimiteException.class, () -> cc.transferir("400.01", poup));
+		assertEquals(Real.of("400.00"), cc.saldo());
+		assertEquals(Real.of("600.00"), poup.saldo());
+		
+		assertThrows(LimiteException.class, () -> cc.transferir("1000.00", poup));
+		assertEquals(Real.of("400.00"), cc.saldo());
+		assertEquals(Real.of("600.00"), poup.saldo());
+		
+		assertDoesNotThrow(() -> cc.transferir("400.00", poup));
+		assertEquals(Real.of("0.00"), cc.saldo());
+		assertEquals(Real.of("1000.00"), poup.saldo());		
 	}
 	
 	
@@ -72,7 +117,11 @@ class ContasTest {
 		assertEquals(Real.of("530.84"), blabuPoupanca.montanteRendimentoMeses(12));
 		assertEquals(Real.of("563.58"), blabuPoupanca.montanteRendimentoMeses(24));
 
-		blabu.sacar(Real.of("500.00"));
+		try {
+			blabu.sacar(Real.of("500.00"));
+		} catch (LimiteException ingnore) {
+		}
+		
 		blabu.depositar(Real.of("1200.69"));
 		blabuPoupanca.setRendimentoMes(new BigDecimal("0.59"));
 		assertEquals("0,59 %", blabuPoupanca.rendimentoMesToString());
@@ -87,7 +136,6 @@ class ContasTest {
 		assertEquals(Real.of("1382.76"), blabuPoupanca.montanteRendimentoMeses(24));
 		assertEquals(Real.of("1592.43"), blabuPoupanca.montanteRendimentoMeses(48));
 		assertEquals(Real.of("2432.25"), blabuPoupanca.montanteRendimentoMeses(12*10));
-		
 	}
 
 }

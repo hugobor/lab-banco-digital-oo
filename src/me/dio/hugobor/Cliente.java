@@ -12,9 +12,13 @@ public class Cliente {
 	// Construtores
 	public Cliente() { super(); }
 	
-	public Cliente(String nome) {
+	private Cliente(String nome) {
 		super();
 		this.nome = nome;
+	}
+	
+	public static Cliente of(String nome) {
+		return new Cliente(nome);
 	}
 
 	

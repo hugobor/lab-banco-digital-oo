@@ -1,13 +1,15 @@
 package me.dio.hugobor;
 
+import java.math.BigDecimal;
 
 /**
  * Classe abstrata para os tipos de Conta.
  * Implementa a inferface de contas (saque, depósito, tranferência,
  * extrato).
- * As subclasses filhas precisam sobrescrever as funções <code>extrato…</code> para implementar a
- * funcionalidade da função <code>extrato</code>.
- * Somente <code>extratoCabecalho</code> precisa ser sobrescrita explicitamente.
+ * As subclasses filhas precisam sobrescrever as funções {@code extrato}… para implementar a
+ * funcionalidade da função {@code extrato}.
+ * Somente {@code extratoCabecalho} precisa ser sobrescrita explicitamente.
+ * Funções de saque tratam o caso de limite (lançam exceção).
  */
 public abstract class Conta implements IConta {
 	
@@ -38,7 +40,14 @@ public abstract class Conta implements IConta {
 	
 	// Interface IConta
 	@Override
-	public void sacar(Real valor) {
+	public void sacar(Real valor) throws LimiteException {
+		BigDecimal valorDec = valor.getValue();
+		BigDecimal limiteDec = this.limite().getValue();
+		if (limiteDec.compareTo(valorDec) < 0) {
+			var extra = Real.of(limiteDec.subtract(valorDec).abs());
+			throw new LimiteException(String.format("Valor de saque ultrapassou o limite em %s.", extra));
+		} 
+		
 		saldo = saldo.sub(valor);
 	}
 
@@ -48,7 +57,7 @@ public abstract class Conta implements IConta {
 	}
 
 	@Override
-	public void transferir(Real valor, IConta contaDestino) {
+	public void transferir(Real valor, IConta contaDestino) throws LimiteException {
 		this.sacar(valor);
 		contaDestino.depositar(valor);
 	}
@@ -56,6 +65,11 @@ public abstract class Conta implements IConta {
 	@Override
 	public Real saldo() {
 		return saldo;
+	}
+	
+	@Override
+	public Real limite() {
+		return saldo();
 	}
 
 	/**
@@ -73,6 +87,7 @@ public abstract class Conta implements IConta {
 		buildString.append(String.format("Agencia: %d%n", agencia));
 		buildString.append(String.format("Numero: %d%n", numero));
 		buildString.append(String.format("Saldo: %s%n", saldo));
+		buildString.append(String.format("Limite: %s%n", limite()));
 		
 		return buildString.toString();
 	}

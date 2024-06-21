@@ -14,7 +14,7 @@ class ClienteTest {
 		client.setNome("Hugo");
 		assertEquals("Hugo", client.getNome());
 		
-		var client2 = new Cliente("Bilobinho");
+		var client2 = Cliente.of("Bilobinho");
 		assertEquals("Bilobinho", client2.getNome());	
 	}
 }
