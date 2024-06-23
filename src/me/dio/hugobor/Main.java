@@ -33,9 +33,27 @@ public class Main {
 			cc.transferir(Real.of("55.01"), poupanca);
 		} catch (LimiteException exc) {
 			System.err.println(exc.getMessage());
-		}		
-
+		}
+		
 		cc.imprimirExtrato();
+		
+		
+		IConta hugo = ContaCorrente.forNewClient("Hugo");
+		IConta garfield = ContaCorrente.forNewClient("Garfield");
+		IConta snoopy = ContaPoupanca.forNewClient("Snoopy");
+		
+		hugo.depositar("5000.00");
+		try {
+			hugo.transferir("500.00", garfield);
+			hugo.transferir("1000.00", snoopy);
+			hugo.transferir("250.00", snoopy);
+		} catch (LimiteException exc) {
+			System.err.println(exc.getMessage());
+		}
+		
+		hugo.imprimirExtrato();
+		garfield.imprimirExtrato();
+		snoopy.imprimirExtrato();
 	}
 
 }

@@ -1,6 +1,8 @@
 package me.dio.hugobor;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classe abstrata para os tipos de Conta.
@@ -21,6 +23,8 @@ public abstract class Conta implements IConta {
 	
 	protected Real saldo;
 	protected Cliente cliente;
+	
+	protected List<Lancamento> lancamentos;
 
 	
 	// Propriedades
@@ -35,6 +39,8 @@ public abstract class Conta implements IConta {
 		this.numero = SEQUENCIAL++;
 		this.cliente = cliente;
 		this.saldo = Real.of("0.00");
+		
+		this.lancamentos = new ArrayList<>();
 	}
 
 	
@@ -49,17 +55,24 @@ public abstract class Conta implements IConta {
 		} 
 		
 		saldo = saldo.sub(valor);
+	
+		lancamentos.addLast(new Lancamento.Saque(this, valor));
 	}
 
 	@Override
 	public void depositar(Real valor) {
 		saldo = saldo.add(valor);
+		
+		lancamentos.addLast(new Lancamento.Deposito(this, valor));
 	}
 
 	@Override
 	public void transferir(Real valor, IConta contaDestino) throws LimiteException {
 		this.sacar(valor);
 		contaDestino.depositar(valor);
+		
+		lancamentos.removeLast(); // Remove saque para trocar por transferência. Continua como depósito no destino.
+		lancamentos.addLast(new Lancamento.Transferencia(this, contaDestino, valor));		
 	}
 	
 	@Override
@@ -70,6 +83,11 @@ public abstract class Conta implements IConta {
 	@Override
 	public Real limite() {
 		return saldo();
+	}
+	
+	@Override
+	public List<Lancamento> lancamentos() {
+		return List.copyOf(lancamentos);
 	}
 
 	/**
@@ -103,7 +121,17 @@ public abstract class Conta implements IConta {
 	 * Mostra todos os créditos e débitos da conta. 
 	 */
 	public String extratoLancamentos() {
-		return "";
+		var buildString = new StringBuilder();
+		String newLine = String.format("%n").intern();
+		
+		lancamentos().forEach(lancamento -> {
+			buildString
+				.append(lancamento.toString())
+				.append(".")
+				.append(newLine);
+		});
+		
+		return buildString.toString();
 	}
 	
 	

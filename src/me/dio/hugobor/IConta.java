@@ -1,5 +1,6 @@
 package me.dio.hugobor;
 
+import java.util.List;
 
 /**
  * Interface para contas.
@@ -23,6 +24,9 @@ public interface IConta {
 	
 	/** Limite máximo para saque. */
 	Real limite();
+	
+	/** Lista de lançamentos. */
+	List<Lancamento> lancamentos();
 	
 	
 	// Delegates

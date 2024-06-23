@@ -23,4 +23,9 @@ public class ContaCorrente extends Conta {
 	public String extratoCabecalho() {
 		return "=== Extrato Conta Corrente ===";
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Conta Corrente de %s", cliente.toString());
+	}	
 }

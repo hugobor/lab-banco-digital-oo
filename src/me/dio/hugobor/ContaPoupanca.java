@@ -8,7 +8,6 @@ public class ContaPoupanca extends Conta {
 	// TODO Adicional conta especial (limite)
 	// TODO Adicionar objeto Agência
 	// TODO Colocar mais coisa no cliente
-	// TODO Adicionar extrato de lançamentos
 
 	/** Taxa de rendimento da poupança. % */
 	private BigDecimal rendimentoMes = new BigDecimal("0.5");
@@ -97,5 +96,11 @@ public class ContaPoupanca extends Conta {
 		BigDecimal M = C.multiply( (BigDecimal.ONE.add(i)).pow(t) );
 		
 		return Real.of(M); //of faz arredondamento
+	}
+	
+	
+	@Override
+	public String toString() {
+		return String.format("Conta Poupança de %s", cliente.toString());
 	}
 }

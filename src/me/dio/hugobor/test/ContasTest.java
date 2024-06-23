@@ -1,8 +1,13 @@
 package me.dio.hugobor.test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +15,7 @@ import me.dio.hugobor.Cliente;
 import me.dio.hugobor.ContaCorrente;
 import me.dio.hugobor.ContaPoupanca;
 import me.dio.hugobor.IConta;
+import me.dio.hugobor.Lancamento;
 import me.dio.hugobor.LimiteException;
 import me.dio.hugobor.Real;
 
@@ -138,4 +144,25 @@ class ContasTest {
 		assertEquals(Real.of("2432.25"), blabuPoupanca.montanteRendimentoMeses(12*10));
 	}
 
+	@Test
+	void lancamentosTest() {
+		IConta hugo = ContaCorrente.forNewClient("Hugo");
+		IConta garfield = ContaCorrente.forNewClient("Garfield");
+		IConta snoopy = ContaPoupanca.forNewClient("Snoopy");
+		
+		hugo.depositar("5000.00");
+		assertDoesNotThrow(() -> hugo.transferir("500.00", garfield));
+		assertDoesNotThrow(() -> hugo.transferir("1000.00", snoopy));
+		assertDoesNotThrow(() -> hugo.transferir("250.00", snoopy));
+		
+		assertEquals(4, hugo.lancamentos().size());
+		assertEquals(1, garfield.lancamentos().size());
+		assertEquals(2, snoopy.lancamentos().size());
+		
+		Function<Lancamento, Integer> extractLancamento = lancamento -> lancamento.getQuantidade().getValue().intValue();
+		assertEquals(List.of(5000, 500, 1000, 250), hugo.lancamentos().stream().map(extractLancamento).toList());
+		assertEquals(List.of(500), garfield.lancamentos().stream().map(extractLancamento).toList());
+		assertEquals(List.of(1000, 250), snoopy.lancamentos().stream().map(extractLancamento).toList());
+	}
+	
 }
