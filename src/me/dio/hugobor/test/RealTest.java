@@ -2,9 +2,10 @@ package me.dio.hugobor.test;
 
 
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
@@ -72,5 +73,37 @@ class RealTest {
 			reals = reals.sub(Real.of("0.01"));
 		}
 		assertEquals(Real.of(0), reals);
+	}
+	
+	@Test
+	void testMontanteJurosCompostos() {
+		Function<String, BigDecimal> dec = stringValue -> new BigDecimal(stringValue);
+
+		var C = Real.of("500");
+		var i = Real.percentoParaDecimal(dec.apply("0.5"));
+		
+		assertEquals(Real.of("502.50"), C.montanteJurosCompostos(i, 1));
+		assertEquals(Real.of("505.01"), C.montanteJurosCompostos(i, 2));
+		assertEquals(Real.of("512.63"), C.montanteJurosCompostos(i, 5));
+		assertEquals(Real.of("563.58"), C.montanteJurosCompostos(i, 24));
+		
+		C = Real.of("1200.69");
+		i = Real.percentoParaDecimal(dec.apply("0.59"));
+		assertEquals(Real.of("1207.77"), C.montanteJurosCompostos(i, 1));
+		assertEquals(Real.of("1214.90"), C.montanteJurosCompostos(i, 2));
+		assertEquals(Real.of("1222.07"), C.montanteJurosCompostos(i, 3));
+		assertEquals(Real.of("1229.28"), C.montanteJurosCompostos(i, 4));
+		assertEquals(Real.of("1236.53"), C.montanteJurosCompostos(i, 5));
+		assertEquals(Real.of("1288.51"), C.montanteJurosCompostos(i, 12));		
+	}                         
+	                          
+	@Test                     
+	void testPercentoParaDecimal() {
+		Function<String, BigDecimal> dec = stringValue -> new BigDecimal(stringValue);
+		
+		assertEquals(dec.apply("1"), Real.percentoParaDecimal(dec.apply("100")));
+		assertEquals(dec.apply("0.5"), Real.percentoParaDecimal(dec.apply("50")));
+		assertEquals(dec.apply("0.15"), Real.percentoParaDecimal(dec.apply("15")));
+		assertEquals(dec.apply("0.005"), Real.percentoParaDecimal(dec.apply("0.5")));
 	}
 }

@@ -111,4 +111,35 @@ public class Real {
 	public Real sub(Real other) {
 		return new Real(this.getValue().subtract(other.getValue()));
 	}
+	
+	
+	/**
+	 * Calcula juros compostos.
+	 * Fórmula: M = C·(1 + i)^n
+	 * M = montante.
+	 * C = capital aplicadao. É o valor que recebe o método ({@code this}).
+	 * i = taxa de juros (% em decimal, use a função estática {@code percentParaDecimal}).
+	 * n = períodos: mêses, anos, semanas, etc. Deve ser de acordo com a taxa de juros.
+	 */
+	public Real montanteJurosCompostos(BigDecimal i, int n) {
+		BigDecimal C = this.getValue();
+		BigDecimal M = C.multiply( (BigDecimal.ONE.add(i)).pow(n) );
+		
+		return Real.of(M);
+	}
+	
+	
+	
+	// Funções auxiliáres
+	
+	/**
+	 * Valor de percentagem para decimal.
+	 * Ex. 100% -> 1.00;
+	 * 50% -> 0.5;
+	 * 0.13% -> 0.0013
+	 */
+	static public BigDecimal percentoParaDecimal(BigDecimal percento) {
+		return percento.divide(BigDecimal.valueOf(100));
+	}
+	
 }

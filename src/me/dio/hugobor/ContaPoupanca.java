@@ -44,12 +44,6 @@ public class ContaPoupanca extends Conta {
 	public BigDecimal getRendimentoMes() { return rendimentoMes; }
 	public void setRendimentoMes(BigDecimal rendimentoMes) { this.rendimentoMes = rendimentoMes; }
 	
-	/**
-	 * Valor decimal do rendimento.
-	 */
-	public BigDecimal getRendimentoMesPercento() {
-		return rendimentoMes.divide(BigDecimal.valueOf(100));
-	}
 	
 	public String rendimentoMesToString() {
 		var formater = new DecimalFormat();
@@ -78,24 +72,18 @@ public class ContaPoupanca extends Conta {
 	 * Rendimento em um mês.
 	 */
 	public Real calculaRendimentoMes() {
-		var rendimento = saldo.getValue().multiply(getRendimentoMesPercento());
+		BigDecimal rendimento = saldo.getValue().multiply(Real.percentoParaDecimal(rendimentoMes));
 		
 		return Real.of(rendimento);
 	}
 
 	
 	/**
-	 * Montante do rendimento acumulado em <code>m</code> mêses.
+	 * Montante do rendimento acumulado em {@code m} mêses.
 	 * M = C·(1 + i)^t 
 	 */
 	public Real montanteRendimentoMeses(int m) {
-		BigDecimal C = saldo.getValue();
-		BigDecimal i = getRendimentoMesPercento();
-		int t = m;
-		
-		BigDecimal M = C.multiply( (BigDecimal.ONE.add(i)).pow(t) );
-		
-		return Real.of(M); //of faz arredondamento
+		return saldo.montanteJurosCompostos(Real.percentoParaDecimal(rendimentoMes), m); 
 	}
 	
 	

@@ -18,6 +18,7 @@ Criado para o desafio da DIO.me!!!!!!
 - [X] Troquei as propriedades “read-only” como `final`;
 - [X] Adicionei rendimento mensal na classe `ContaPoupança`;
 - [X] Usei algumas funções `default` em interfaces;
-- [ ] Adicionei `javadoc`.
+- [X] Movi as funções de cálculo de juros para a classe `Real`;
+- [X] Adicionei `javadoc`.
 
 
