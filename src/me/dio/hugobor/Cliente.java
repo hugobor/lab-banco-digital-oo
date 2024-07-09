@@ -1,5 +1,9 @@
 package me.dio.hugobor;
 
+/**
+ * Represente um cliente do banco.
+ * O mesmo cliente pode ter mais de uma conta.
+ */
 public class Cliente {
 
 	private String nome;

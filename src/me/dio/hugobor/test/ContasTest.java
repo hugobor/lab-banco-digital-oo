@@ -2,6 +2,7 @@ package me.dio.hugobor.test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import me.dio.hugobor.Cliente;
 import me.dio.hugobor.ContaCorrente;
+import me.dio.hugobor.ContaEspecial;
 import me.dio.hugobor.ContaPoupanca;
 import me.dio.hugobor.IConta;
 import me.dio.hugobor.Lancamento;
@@ -102,6 +104,82 @@ class ContasTest {
 		assertEquals(Real.of("1000.00"), poup.saldo());		
 	}
 	
+	@Test
+	void testEspecial() {
+		IConta especial = ContaEspecial.forNewClient("Jeorge VIP", Real.of("1500.00"));
+		ContaEspecial espesp = (ContaEspecial)especial;
+		
+		assertEquals(Real.of("1500.00"), especial.limite());
+		assertFalse(espesp.emDivida());
+		
+		especial.depositar(Real.of("2000.00"));
+		assertEquals(Real.of("3500.00"), especial.limite());
+		assertFalse(espesp.emDivida());
+		
+		especial.depositar(Real.of("500.00"));
+		assertEquals(Real.of("4000.00"), especial.limite());
+		assertEquals(Real.of("2500.00"), especial.saldo());
+		assertEquals(Real.of("0.00"), espesp.limiteUtilizado());
+		assertFalse(espesp.emDivida());
+		
+		assertDoesNotThrow(() -> especial.sacar(Real.of("3000.00")));
+		assertEquals(Real.of("-500.00"), especial.saldo());
+		assertEquals(Real.of("500.00"), espesp.limiteUtilizado());
+		assertEquals(Real.of("1000.00"), especial.limite());
+		assertTrue(espesp.emDivida());
+		
+		
+		assertDoesNotThrow(() -> especial.sacar(Real.of("500.00")));
+		assertEquals(Real.of("-1000.00"), especial.saldo());
+		assertEquals(Real.of("1000.00"), espesp.limiteUtilizado());
+		assertEquals(Real.of("500.00"), especial.limite());
+		
+		String extrato = especial.extrato();
+		assertTrue(extrato.contains("Conta Especial"));
+		assertTrue(extrato.contains("- R$ 1.000,00"));
+		assertTrue(extrato.contains("Especial: R$ 1.500,00"));
+
+		assertThrows(LimiteException.class, () -> especial.sacar(Real.of("1000.00")));
+		assertThrows(LimiteException.class, () -> especial.sacar(Real.of("2000.00")));
+		assertThrows(LimiteException.class, () -> especial.sacar(Real.of("5000.00")));
+		
+		assertTrue(extrato.contains("- R$ 1.000,00"));
+		assertTrue(extrato.contains("Especial: R$ 1.500,00"));
+		
+		
+		assertDoesNotThrow(() -> especial.sacar(Real.of("500.00")));
+		assertEquals(Real.of("-1500.00"), especial.saldo());
+		assertEquals(Real.of("0.00"), especial.limite());
+		
+		especial.depositar(Real.of("500"));
+		assertTrue(espesp.emDivida());
+		assertEquals(Real.of("1000.00"), espesp.limiteUtilizado());
+
+		
+		// M = C·(1 + i)^n 
+		assertEquals(Real.of("1150.00"), espesp.dividaMeses(1));
+		assertEquals(Real.of("1520.88"), espesp.dividaMeses(3));
+		assertEquals(Real.of("2011.36"), espesp.dividaMeses(5));
+		assertEquals(Real.of("5350.25"), espesp.dividaMeses(12));
+		assertEquals(Real.of("28625.18"), espesp.dividaMeses(24));
+		
+		especial.depositar("1000");
+		assertFalse(espesp.emDivida());
+		assertEquals(Real.of(0), espesp.dividaMeses(1));
+		assertEquals(Real.of(0), espesp.dividaMeses(3));
+		assertEquals(Real.of(0), espesp.dividaMeses(5));
+		assertEquals(Real.of(0), espesp.dividaMeses(12));
+		assertEquals(Real.of(0), espesp.dividaMeses(24));
+		
+		especial.depositar("100000");
+		assertFalse(espesp.emDivida());
+		assertEquals(Real.of(0), espesp.dividaMeses(1));
+		assertEquals(Real.of(0), espesp.dividaMeses(3));
+		assertEquals(Real.of(0), espesp.dividaMeses(5));
+		assertEquals(Real.of(0), espesp.dividaMeses(12));
+		assertEquals(Real.of(0), espesp.dividaMeses(24));
+		
+	}
 	
 	@Test
 	void testPoupanca() {

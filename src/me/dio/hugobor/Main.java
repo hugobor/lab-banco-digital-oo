@@ -54,6 +54,26 @@ public class Main {
 		hugo.imprimirExtrato();
 		garfield.imprimirExtrato();
 		snoopy.imprimirExtrato();
+		
+		IConta joao_vip = ContaEspecial.forNewClient("João VIP");
+		ContaEspecial joao_vip_esp = (ContaEspecial)joao_vip;
+		
+		joao_vip.depositar(Real.of("10000.00"));
+		try {
+			joao_vip.transferir("10000.00", garfield);
+			joao_vip.transferir("800.00", snoopy);
+			joao_vip.transferir("500.00", snoopy);
+		} catch (LimiteException exc) {
+			System.err.println(exc.getMessage());
+		}
+		
+		joao_vip.imprimirExtrato();
+		
+		joao_vip.depositar(Real.of("400.00"));
+		joao_vip.imprimirExtrato();
+		
+		System.out.println("Todas as contas:");
+		Banco.bancoCentral.getContas().forEach(System.out::println);
 	}
 
 }

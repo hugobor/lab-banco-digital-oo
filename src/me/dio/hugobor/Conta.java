@@ -6,11 +6,11 @@ import java.util.List;
 
 /**
  * Classe abstrata para os tipos de Conta.
- * Implementa a inferface de contas (saque, depósito, tranferência,
- * extrato).
- * As subclasses filhas precisam sobrescrever as funções {@code extrato}… para implementar a
- * funcionalidade da função {@code extrato}.
- * Somente {@code extratoCabecalho} precisa ser sobrescrita explicitamente.
+ * Implementa a inferface de {@link Conta#Conta(Cliente)} (saque, depósito, tranferência,
+ * extrato, etc…).
+ * As subclasses filhas precisam sobrescrever as funções {@code extrato…} para implementar a
+ * funcionalidade da função  {@link IConta#extrato()}.
+ * Somente {@link Conta#extratoCabecalho()} precisa ser sobrescrita explicitamente.
  * Funções de saque tratam o caso de limite (lançam exceção).
  */
 public abstract class Conta implements IConta {
@@ -41,6 +41,8 @@ public abstract class Conta implements IConta {
 		this.saldo = Real.of("0.00");
 		
 		this.lancamentos = new ArrayList<>();
+		
+		Banco.bancoCentral.getContas().add(this);
 	}
 
 	

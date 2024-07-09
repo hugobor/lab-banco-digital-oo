@@ -3,11 +3,16 @@ package me.dio.hugobor;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
+
+/**
+ * Conta poupança. Possúi funções para o cálculo de rendimento mensal.
+ * A propriedade {@code rendimentoMes} define rendimento mensal.
+ * {@link #rendimentoMesToString()} calcula o rendimento em um mês.
+ * {@link #montanteRendimentoMeses(int)} calcula o rendimento em uma quanidade de mêses.
+ */
 public class ContaPoupanca extends Conta {
-	
-	// TODO Adicional conta especial (limite)
-	// TODO Adicionar objeto Agência
-	// TODO Colocar mais coisa no cliente
+
+	// TODO Arrumar os javadocs
 
 	/** Taxa de rendimento da poupança. % */
 	private BigDecimal rendimentoMes = new BigDecimal("0.5");

@@ -2,6 +2,10 @@ package me.dio.hugobor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Representa um lançamento de saque, depósito ou transferência.
+ * Salva o data-hora de quando o lançamento foi feito.
+ */
 abstract public class Lancamento {
 	
 	protected final LocalDateTime timestamp;
